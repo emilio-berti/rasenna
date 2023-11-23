@@ -1,0 +1,16 @@
+Package: rasenna
+Type: Package
+Title: Suite of Tools for Movement Ecology
+Version: 0.1.0
+Author: person("Emilio", "Berti", role = c("aut", "cre"), email = "emilio.berti@idiv.de")
+Maintainer: Emilio Berti <emilio.berti@idiv.de>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+  Rcpp (>= 1.0.11),
+  methods
+LinkingTo: Rcpp
+RoxygenNote: 7.2.3
