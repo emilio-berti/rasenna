@@ -1,27 +1,24 @@
 #' @title Calculate direction
-#' @param x1 coordinates at time 1.
-#' @param x2 coordinates at time 2.
+#' @param x matrix of coordinates, one column for x and one for y.
 #' @param units either "rad" for radians of "deg" for degree.
 #' @return numeric, the direction angle, see details.
 #' @details Direction is calculated as the angle between two relocations.
 #' @examples
-#' x1 <- c(0, 0)
-#' x2 <- c(1, 1)
-#' direction(x1, x2, units = "deg")
-direction <- function(
-    x1,
-    x2,
-    units = "rad"
-) {
-  stopifnot (length(x1) == 2)
-  stopifnot (length(x2) == 2)
-  x <- x2 - x1
-  if (all(x == 0)) {
-    warning("no movement")
-    return (NA)
+#' x <- matrix(c(0, 0, 1, 1, 2, 3), byrow = TRUE, ncol = 2)
+#' direction(x, units = "deg")
+direction <- function(x, units = "rad") {
+  stopifnot (is(x, "matrix"))
+  stopifnot (ncol(x) == 2)
+  dx <- x[-1, ] - x[-nrow(x), ]
+  if (is(dx, "numeric")) dx <- matrix(dx, ncol = 2)
+  ans <- atan2(dx[, 2], dx[, 1])
+  if (any(rowSums(dx) == 0)) {
+    warning("no movement between some fixes")
+    empty <- which(rowSums(dx) == 0)
+    ans[empty] <- NA
   }
-  ans <- atan2(x[2], x[1])
   if (units == "deg") ans <- ans * 180 / pi
+  ans <- c(NA, ans) #add first not-known direction
   return (ans)
 }
 
@@ -36,11 +33,11 @@ direction <- function(
 #' set.seed(123)
 #' x <- matrix(rnorm(100), 50, 2)
 #' cor.test.direction(x, units = "deg")
-#' # give some correlation to direction
+#' #' # give some correlation to direction
 #' for (i in seq_len(nrow(x))) {
 #'   if (i > 2) {
-#'     d <- direction(x[i - 2, ], x[i - 1, ])
-#'     d <- rnorm(1, d, 1)
+#'     d <- direction(matrix(c(x[i - 2, ], x[i - 1, ]), byrow = TRUE, ncol = 2))
+#'     d <- rnorm(1, d[2], .5)
 #'     l <- sqrt ( sum((x[2, ] - x[1, ]) ^ 2) )
 #'     x[i, ] <- x[i - 1, ] + c(l * cos(d), l * sin(d))
 #'   }
@@ -54,8 +51,8 @@ cor.test.direction <- function(
 ) {
   stopifnot (is(x, "matrix"))
   stopifnot (ncol(x) == 2)
-  x <- x[, 2] - x[, 1]
-  d <- atan2(x[-1], x[-length(x)])
+  d <- direction(x)
+  d <- d[-1]
   if (units == "deg") d <- d * 180 / pi
   if (plot) {
     plot(

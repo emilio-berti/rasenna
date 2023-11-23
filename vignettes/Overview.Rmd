@@ -1,0 +1,31 @@
+---
+title: "Overview"
+output: rmarkdown::html_vignette
+bibliography: "bibliography.bib"
+vignette: >
+  %\VignetteIndexEntry{Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rasenna)
+```
+
+## Test for serial correlation of direction movement
+
+Telemetry data that is at high temporal resolution may violate the assumption of independence of contiguous fixes.
+This can be detected by assessing the correlation between contiguous fixes [@moorcroft2013mechanistic].
+
+```{r direction}
+x <- matrix(rnorm(1e3), 1e3/2, 2)
+cor.test.direction(x, method = "pearson")
+```
+# References
