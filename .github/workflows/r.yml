@@ -36,9 +36,7 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Install pandoc
-        uses: pandoc/actions/setup
-        with:
-          version: 2.19
+        uses: nikeee/setup-pandoc@v1
       - name: Check
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
