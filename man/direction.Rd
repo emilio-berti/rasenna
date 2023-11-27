@@ -4,12 +4,10 @@
 \alias{direction}
 \title{Calculate direction}
 \usage{
-direction(x1, x2, units = "rad")
+direction(x, units = "rad")
 }
 \arguments{
-\item{x1}{coordinates at time 1.}
-
-\item{x2}{coordinates at time 2.}
+\item{x}{matrix of coordinates, one column for x and one for y.}
 
 \item{units}{either "rad" for radians of "deg" for degree.}
 }
@@ -23,7 +21,6 @@ Calculate direction
 Direction is calculated as the angle between two relocations.
 }
 \examples{
-x1 <- c(0, 0)
-x2 <- c(1, 1)
-direction(x1, x2, units = "deg")
+x <- matrix(c(0, 0, 1, 1, 2, 3), byrow = TRUE, ncol = 2)
+direction(x, units = "deg")
 }

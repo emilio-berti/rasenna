@@ -17,7 +17,28 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(rasenna)
+data(belcho)
 ```
+
+## Resample telemetry data
+
+Many analyses using telemetry data assume that the fixes have been sampled at the same temporal resolution, i.e. at a constant time interval.
+The `resample()` function re-sample telemetry data to force this assumption.
+Re-sampling is done by removing fixes that are closer in time than an user-specified time interval (see _freq_ and _low_ in `?resample()`).
+When a fix is removed, the time interval between fixes is re-calculated.
+Additionally, fixes that are apart more than a given time interval (see _high_ in `?resample()`) are kept, but they are assigned different _ID_s to indicate they belong to different tracks and should not be analyzed as part of the same consecutive trajectory.
+
+```{r resample}
+belcho[["timestamp"]] <- strptime(
+  belcho[["timestamp"]], 
+  format = "%Y-%m-%d %H:%M:%S", 
+  tz = "UTC"
+)
+res <- resample(belcho, ts_col = "timestamp", freq = 3, units = "hours")
+summary(res[["dt"]])
+with(res, boxplot(dt ~ ID, las = 2))
+```
+
 
 ## Test for serial correlation of direction movement
 
@@ -25,7 +46,53 @@ Telemetry data that is at high temporal resolution may violate the assumption of
 This can be detected by assessing the correlation between contiguous fixes [@moorcroft2013mechanistic].
 
 ```{r direction}
-x <- matrix(rnorm(1e3), 1e3/2, 2)
-cor.test.direction(x, method = "pearson")
+data(belcho)
+str(belcho)
+# belcho[["timestamp"]] <- strptime(
+#   belcho[["timestamp"]],
+#   format = "%Y-%m-%d %H:%M:%S"
+# )
+# interval <- function(t, units = "hours") {
+#   ans <- difftime(t[-1], t[-length(t)], units = units)
+#   return (c(NA, ans))
+# }
+# belcho[["interval"]] <- interval(belcho[["timestamp"]])
+# plot(belcho$interval, ylim = c(0, 4))
+# belcho <- belcho[1 : which(belcho[["interval"]] == 2)[1], ]
+# plot(belcho$interval, ylim = c(0, 4))
+# 
+# resample <- function(df, colname = "timestamp", units = "hours") {
+#   t <- df[[colname]]
+#   stopifnot (is(t, "POSIXt"))
+#   int <- interval(t, units)
+#   med <- median(int, na.rm = TRUE)
+#   remove <- rep(FALSE, length(t))
+#   while (any(int[-1] < 0.9 * med)) {
+#     remove[which(interval(t) < 0.9 * med)[1] + sum(remove)] <- TRUE
+#     t <- t[-which(interval(t) < 0.9 * med)[1]]
+#     int <- interval(t, units)
+#   }
+#   df[["drop"]] <- remove
+#   which(int[-1] > 1.1 * med)
+#   return (df)
+# }
+# belcho <- resample(belcho, colname = "timestamp", units = "hours")
+# new.belcho <- subset(belcho, !drop)
+# new.belcho[["interval"]] <- interval(new.belcho[["timestamp"]])
+# new.belcho[["ID"]] <- 1
+# for (i in which(new.belcho[["interval"]] > 3 * 1.1)) {
+#   new.belcho[["ID"]][i : nrow(new.belcho)] <- max(new.belcho[["ID"]]) + 1
+#   new.belcho[["interval"]][i] <- NA
+# }
+# new.belcho <- na.omit(new.belcho)
+# tapply(
+#   new.belcho$interval,
+#   new.belcho$ID,
+#   max,
+#   na.rm = TRUE
+# )
+# cor.test.direction(belcho[, c("x", "y")], method = "pearson")
 ```
+
+
 # References

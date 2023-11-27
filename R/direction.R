@@ -7,14 +7,16 @@
 #' x <- matrix(c(0, 0, 1, 1, 2, 3), byrow = TRUE, ncol = 2)
 #' direction(x, units = "deg")
 direction <- function(x, units = "rad") {
-  stopifnot (is(x, "matrix"))
+  if (!is(x, "matrix")) {
+    x <- as.matrix(x)
+  }
   stopifnot (ncol(x) == 2)
   dx <- x[-1, ] - x[-nrow(x), ]
   if (is(dx, "numeric")) dx <- matrix(dx, ncol = 2)
   ans <- atan2(dx[, 2], dx[, 1])
-  if (any(rowSums(dx) == 0)) {
+  if (any(rowSums(abs(dx)) == 0)) {
     warning("no movement between some fixes")
-    empty <- which(rowSums(dx) == 0)
+    empty <- which(rowSums(abs(dx)) == 0)
     ans[empty] <- NA
   }
   if (units == "deg") ans <- ans * 180 / pi
@@ -49,7 +51,9 @@ cor.test.direction <- function(
     units = "rad",
     plot = TRUE
 ) {
-  stopifnot (is(x, "matrix"))
+  if (!is(x, "matrix")) {
+    x <- as.matrix(x)
+  }
   stopifnot (ncol(x) == 2)
   d <- direction(x)
   d <- d[-1]

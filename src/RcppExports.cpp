@@ -20,9 +20,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// resample
+List resample(NumericVector t, double freq, double th_low, double th_high);
+RcppExport SEXP _rasenna_resample(SEXP tSEXP, SEXP freqSEXP, SEXP th_lowSEXP, SEXP th_highSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< double >::type freq(freqSEXP);
+    Rcpp::traits::input_parameter< double >::type th_low(th_lowSEXP);
+    Rcpp::traits::input_parameter< double >::type th_high(th_highSEXP);
+    rcpp_result_gen = Rcpp::wrap(resample(t, freq, th_low, th_high));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rasenna_rcpp_hello", (DL_FUNC) &_rasenna_rcpp_hello, 0},
+    {"_rasenna_resample", (DL_FUNC) &_rasenna_resample, 4},
     {NULL, NULL, 0}
 };
 
