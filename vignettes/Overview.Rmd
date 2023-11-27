@@ -46,52 +46,7 @@ Telemetry data that is at high temporal resolution may violate the assumption of
 This can be detected by assessing the correlation between contiguous fixes [@moorcroft2013mechanistic].
 
 ```{r direction}
-data(belcho)
-str(belcho)
-# belcho[["timestamp"]] <- strptime(
-#   belcho[["timestamp"]],
-#   format = "%Y-%m-%d %H:%M:%S"
-# )
-# interval <- function(t, units = "hours") {
-#   ans <- difftime(t[-1], t[-length(t)], units = units)
-#   return (c(NA, ans))
-# }
-# belcho[["interval"]] <- interval(belcho[["timestamp"]])
-# plot(belcho$interval, ylim = c(0, 4))
-# belcho <- belcho[1 : which(belcho[["interval"]] == 2)[1], ]
-# plot(belcho$interval, ylim = c(0, 4))
-# 
-# resample <- function(df, colname = "timestamp", units = "hours") {
-#   t <- df[[colname]]
-#   stopifnot (is(t, "POSIXt"))
-#   int <- interval(t, units)
-#   med <- median(int, na.rm = TRUE)
-#   remove <- rep(FALSE, length(t))
-#   while (any(int[-1] < 0.9 * med)) {
-#     remove[which(interval(t) < 0.9 * med)[1] + sum(remove)] <- TRUE
-#     t <- t[-which(interval(t) < 0.9 * med)[1]]
-#     int <- interval(t, units)
-#   }
-#   df[["drop"]] <- remove
-#   which(int[-1] > 1.1 * med)
-#   return (df)
-# }
-# belcho <- resample(belcho, colname = "timestamp", units = "hours")
-# new.belcho <- subset(belcho, !drop)
-# new.belcho[["interval"]] <- interval(new.belcho[["timestamp"]])
-# new.belcho[["ID"]] <- 1
-# for (i in which(new.belcho[["interval"]] > 3 * 1.1)) {
-#   new.belcho[["ID"]][i : nrow(new.belcho)] <- max(new.belcho[["ID"]]) + 1
-#   new.belcho[["interval"]][i] <- NA
-# }
-# new.belcho <- na.omit(new.belcho)
-# tapply(
-#   new.belcho$interval,
-#   new.belcho$ID,
-#   max,
-#   na.rm = TRUE
-# )
-# cor.test.direction(belcho[, c("x", "y")], method = "pearson")
+cor.test.direction(res[res[["ID"]] == 1, c("x", "y")], method = "pearson")
 ```
 
 
