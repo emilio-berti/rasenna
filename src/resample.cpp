@@ -5,8 +5,8 @@ using namespace Rcpp;
 //' @param x Matrix with telemetry locations.
 //' @param t Datetime of the location in Unix time (numeric).
 //' @param freq Frequency of resampling.
-//' @param freq_low Lower threshold (proportion) of frequency to keep.
-//' @param freq_high Higher threshold (proportion) of frequency to assign to
+//' @param th_low Lower threshold (proportion) of frequency to keep.
+//' @param th_high Higher threshold (proportion) of frequency to assign to
 //'   the same track.
 // [[Rcpp::export(.resample)]]
 List resample(

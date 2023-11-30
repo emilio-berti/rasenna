@@ -11,7 +11,10 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 4,
+  fig.height = 4,
+  fig.align = "center"
 )
 ```
 
@@ -36,7 +39,6 @@ belcho[["timestamp"]] <- strptime(
 )
 res <- resample(belcho, ts_col = "timestamp", freq = 3, units = "hours")
 summary(res[["dt"]])
-with(res, boxplot(dt ~ ID, las = 2))
 ```
 
 
@@ -48,6 +50,72 @@ This can be detected by assessing the correlation between contiguous fixes [@moo
 ```{r direction}
 cor.test.direction(res[res[["ID"]] == 1, c("x", "y")], method = "pearson")
 ```
+# Localizing tendency model
 
+The localizing tendency models assumes that direction angles are distributed following a Von Mises distribution:
+\[
+  \text{VM}(\phi, \hat\phi, \kappa)= \frac{exp(\kappa \cdot cos(\phi - \hat\phi))}{2 \pi I_0(\kappa)}
+\]
+and relocation steps follow a negative exponential distribution:
+\[
+  f_\tau(\rho, \lambda) = \lambda \cdot exp(-\lambda\cdot \rho)
+\]
+
+The parameters $\kappa$ and $\lambda = 1/\bar{\rho}$ can be estimated directly from the data [@moorcroft2013mechanistic, p. 143-144].
+
+```{r capra}
+data(capra)
+capra[["timestamp"]] <- strptime(
+  capra[["timestamp"]], 
+  format = "%Y-%m-%d %H:%M:%S", 
+  tz = "UTC"
+)
+res <- resample(capra, ts_col = "timestamp", freq = 6, units = "hours")
+res <- res[res$ID == 309, ] #keep only track 309
+xy <- res[, c("x", "y")]
+cor.test.direction(xy) #test serial correlation
+```
+
+```{r ltm_angle}
+k <- ltm_kappa(direction(xy), relative_direction(xy))
+hist(
+  direction(xy), 
+  probability = TRUE, 
+  breaks = 10, 
+  xlab = "direction (rad)",
+  main = ""
+)
+lines(
+  seq(-pi, pi, by = .01), 
+  von_mises(
+    seq(-pi, pi, by = .01),
+    mean(direction(xy), na.rm = TRUE),
+    kappa = k
+  ),
+  lw = 2, col = "darkred"
+)
+```
+
+```{r ltm_steps}
+rho <- ltm_rho(xy)
+dx <- xy[-1, 1] - xy[-nrow(xy), 1]
+dy <- xy[-1, 2] - xy[-nrow(xy), 2]
+d <- sqrt(dx^2 + dy^2)
+hist(
+  d, 
+  probability = TRUE, 
+  breaks = 10,
+  xlab = "Step length (m)",
+  main = ""
+)
+lines(
+  seq(0, 1200, length.out = 5e2),
+  exponential(seq(0, 1200, length.out = 5e2), 1 / rho),
+  lw = 2, col = "darkred"
+)
+```
+
+Assumptions of modeling angles and step-length using the Von Mises and negative exponential distributions should always be checked.
+The data from _Capra ibex_ used above, for example, do not follow a Von Mises distribution and using the localizing tendency model is questionable.
 
 # References

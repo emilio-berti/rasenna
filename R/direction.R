@@ -70,3 +70,25 @@ cor.test.direction <- function(
   ans <- cor.test(d[-1], d[-length(d)], method = method)
   return (ans)
 }
+
+#' @title Estimate Relative Direction
+#' @param x matrix of coordinates, one column for x and one for y.
+#' @param xh matrix of coordinates of home range center.
+#' @param units either "rad" for radians of "deg" for degree.
+#' @details The relative direction is calculated as the angle between a
+#'  location and the center of the home range.
+#' @return vector of relative directions.
+relative_direction <- function(x, xh = NULL, units = "rad") {
+  if (!is(x, "matrix")) {
+    x <- as.matrix(x)
+  }
+  if (is.null(xh)) {
+    message("Home range center calculated as average coordinates")
+    xh <- matrix(colMeans(xy), ncol = 2)
+  }
+  if (!is(xh, "matrix")) {
+    xh <- as.matrix(xh)
+  }
+  ans <- atan2(xh[, 2] - xy[, 2], xh[, 1] - xy[, 1])
+  return (ans)
+}
