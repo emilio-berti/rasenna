@@ -2,7 +2,6 @@
 using namespace Rcpp;
 
 //' Resample telemetry fixes to a standard temporal resolution.
-//' @param x Matrix with telemetry locations.
 //' @param t Datetime of the location in Unix time (numeric).
 //' @param freq Frequency of resampling.
 //' @param th_low Lower threshold (proportion) of frequency to keep.
@@ -33,9 +32,10 @@ List resample(
       ID[i] = max(ID) + 1;
     }
     if ( dt[i] < th_low ) {
+      ID[i] = max(ID);
       include[i] = FALSE;
-      if ( i >= -j ){
-        j -= 1; //move counter
+      if ( i >= j ){
+        j += 1; //move counter
         dt[i + 1] = t[i + 1] - t[i - j];
       }
     } else {

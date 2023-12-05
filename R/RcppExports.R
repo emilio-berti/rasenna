@@ -6,11 +6,10 @@ rcpp_hello <- function() {
 }
 
 #' Resample telemetry fixes to a standard temporal resolution.
-#' @param x Matrix with telemetry locations.
 #' @param t Datetime of the location in Unix time (numeric).
 #' @param freq Frequency of resampling.
-#' @param freq_low Lower threshold (proportion) of frequency to keep.
-#' @param freq_high Higher threshold (proportion) of frequency to assign to
+#' @param th_low Lower threshold (proportion) of frequency to keep.
+#' @param th_high Higher threshold (proportion) of frequency to assign to
 #'   the same track.
 .resample <- function(t, freq, th_low = 0.9, th_high = 1.1) {
     .Call(`_rasenna_resample`, t, freq, th_low, th_high)

@@ -15,7 +15,7 @@ ltm_kappa <- function(phi, phi_hat) {
   R <- sqrt(C ^ 2 + S ^ 2)
   if (R < 0.53) {
     kappa <- 2*R + R^3 + 5*R^5/6
-  } else if (k < 0.85) {
+  } else if (R < 0.85) {
     kappa <- -0.4 + 1.39*R + 0.43/(1 - R)
   } else {
     kappa <- 1 / (R^3 - 4*R^2 + 3*R)
@@ -34,8 +34,8 @@ ltm_rho <- function(x) {
   if (!is(x, "matrix")) {
     x <- as.matrix(x)
   }
-  dx <- x[-1, 1] - x[nrow(x), 1]
-  dy <- x[-1, 2] - x[nrow(x), 2]
+  dx <- x[-1, 1] - x[-nrow(x), 1]
+  dy <- x[-1, 2] - x[-nrow(x), 2]
   rho <- mean(sqrt(dx ^ 2 + dy ^ 2))
   return (rho)
 }

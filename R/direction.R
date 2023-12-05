@@ -84,11 +84,12 @@ relative_direction <- function(x, xh = NULL, units = "rad") {
   }
   if (is.null(xh)) {
     message("Home range center calculated as average coordinates")
-    xh <- matrix(colMeans(xy), ncol = 2)
+    xh <- matrix(colMeans(x), ncol = 2)
   }
   if (!is(xh, "matrix")) {
-    xh <- as.matrix(xh)
+    xh <- matrix(xh, ncol = 2)
   }
-  ans <- atan2(xh[, 2] - xy[, 2], xh[, 1] - xy[, 1])
+  ans <- atan2(xh[, 2] - x[, 2], xh[, 1] - x[, 1])
+  if (units == "deg") ans <- ans * 180 / pi
   return (ans)
 }

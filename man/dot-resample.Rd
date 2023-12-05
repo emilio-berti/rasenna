@@ -11,11 +11,9 @@
 
 \item{freq}{Frequency of resampling.}
 
-\item{x}{Matrix with telemetry locations.}
+\item{th_low}{Lower threshold (proportion) of frequency to keep.}
 
-\item{freq_low}{Lower threshold (proportion) of frequency to keep.}
-
-\item{freq_high}{Higher threshold (proportion) of frequency to assign to
+\item{th_high}{Higher threshold (proportion) of frequency to assign to
 the same track.}
 }
 \description{
