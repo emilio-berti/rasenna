@@ -41,7 +41,6 @@ jobs:
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
 
-jobs:
   build:
     runs-on: macos-latest
     strategy:
@@ -65,7 +64,6 @@ jobs:
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
 
-jobs:
   build:
     runs-on: macos-latest
     strategy:
