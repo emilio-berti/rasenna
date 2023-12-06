@@ -34,7 +34,7 @@ direction <- function(x, units = "rad") {
 #' @examples
 #' set.seed(123)
 #' x <- matrix(rnorm(100), 50, 2)
-#' cor.test.direction(x, units = "deg")
+#' cor_test_direction(x, units = "deg")
 #' #' # give some correlation to direction
 #' for (i in seq_len(nrow(x))) {
 #'   if (i > 2) {
@@ -44,8 +44,8 @@ direction <- function(x, units = "rad") {
 #'     x[i, ] <- x[i - 1, ] + c(l * cos(d), l * sin(d))
 #'   }
 #' }
-#' cor.test.direction(x, units = "deg")
-cor.test.direction <- function(
+#' cor_test_direction(x, units = "deg")
+cor_test_direction <- function(
     x,
     method = "pearson",
     units = "rad",

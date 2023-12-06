@@ -48,7 +48,7 @@ Telemetry data that is at high temporal resolution may violate the assumption of
 This can be detected by assessing the correlation between contiguous fixes [@moorcroft2013mechanistic].
 
 ```{r direction}
-cor.test.direction(res[res[["ID"]] == 1, c("x", "y")], method = "pearson")
+cor_test_direction(res[res[["ID"]] == 1, c("x", "y")], method = "pearson")
 ```
 # Localizing tendency model
 
@@ -73,7 +73,7 @@ capra[["timestamp"]] <- strptime(
 res <- resample(capra, ts_col = "timestamp", freq = 6, units = "hours")
 res <- res[res$ID == 309, ] #keep only track 309
 xy <- res[, c("x", "y")]
-cor.test.direction(xy) #test serial correlation
+cor_test_direction(xy) #test serial correlation
 ```
 
 ```{r ltm_angle}
@@ -98,9 +98,7 @@ lines(
 
 ```{r ltm_steps}
 rho <- ltm_rho(xy)
-dx <- xy[-1, 1] - xy[-nrow(xy), 1]
-dy <- xy[-1, 2] - xy[-nrow(xy), 2]
-d <- sqrt(dx^2 + dy^2)
+d <- step_length(xy)
 hist(
   d, 
   probability = TRUE, 
