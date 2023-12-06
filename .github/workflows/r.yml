@@ -20,6 +20,13 @@ permissions:
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+
     steps:
       - uses: actions/checkout@v3
       - name: Install pandoc
@@ -39,6 +46,13 @@ jobs:
 
   macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+
     steps:
       - uses: actions/checkout@v3
       - name: Install pandoc
@@ -58,6 +72,13 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+
     steps:
       - uses: actions/checkout@v3
       - name: Install pandoc
