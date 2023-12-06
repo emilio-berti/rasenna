@@ -28,7 +28,6 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
 
-jobs:
   macos:
     runs-on: macos-latest
     env:
@@ -48,7 +47,6 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
 
-jobs:
   windows:
     runs-on: windows-latest
     env:
