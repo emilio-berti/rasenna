@@ -4,16 +4,14 @@
 \alias{cor_test_direction}
 \title{Calculate direction serial correlation}
 \usage{
-cor_test_direction(x, method = "pearson", units = "rad", plot = TRUE)
+cor_test_direction(df, method = "pearson", graph = TRUE)
 }
 \arguments{
-\item{x}{matrix of coordinates, one column for x and one for y.}
+\item{df}{data.frame of the track.}
 
 \item{method}{either "pearson" or "spearman".}
 
-\item{units}{either "rad" for radians of "deg" for degree.}
-
-\item{plot}{plot the directions.}
+\item{graph}{plot the directions.}
 }
 \value{
 an object of class "htest", from cor.test().

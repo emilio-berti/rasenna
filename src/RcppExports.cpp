@@ -10,23 +10,49 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// rcpp_hello
-List rcpp_hello();
-RcppExport SEXP _rasenna_rcpp_hello() {
+// bearing
+NumericVector bearing(NumericVector x, NumericVector y);
+RcppExport SEXP _rasenna_bearing(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello());
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(bearing(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// turning_angle
+NumericVector turning_angle(NumericVector x, NumericVector y);
+RcppExport SEXP _rasenna_turning_angle(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(turning_angle(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// distance
+NumericVector distance(NumericVector x, NumericVector y);
+RcppExport SEXP _rasenna_distance(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(distance(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // resample
-List resample(NumericVector t, double freq, double th_low, double th_high);
+List resample(const NumericVector& t, double freq, double th_low, double th_high);
 RcppExport SEXP _rasenna_resample(SEXP tSEXP, SEXP freqSEXP, SEXP th_lowSEXP, SEXP th_highSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type t(tSEXP);
     Rcpp::traits::input_parameter< double >::type freq(freqSEXP);
     Rcpp::traits::input_parameter< double >::type th_low(th_lowSEXP);
     Rcpp::traits::input_parameter< double >::type th_high(th_highSEXP);
@@ -36,7 +62,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rasenna_rcpp_hello", (DL_FUNC) &_rasenna_rcpp_hello, 0},
+    {"_rasenna_bearing", (DL_FUNC) &_rasenna_bearing, 2},
+    {"_rasenna_turning_angle", (DL_FUNC) &_rasenna_turning_angle, 2},
+    {"_rasenna_distance", (DL_FUNC) &_rasenna_distance, 2},
     {"_rasenna_resample", (DL_FUNC) &_rasenna_resample, 4},
     {NULL, NULL, 0}
 };

@@ -20,9 +20,8 @@
 #'    will likely result in inaccuracies and biases in virtually any movement
 #'    analysis performed afterwards.
 #'
-#' @return data.frame, the original dataframe with two new columns:
-#'   1) ID, the ID of the track. See details.
-#'   2) dt, the time interval between fixes, with units specified with @param units.
+#' @return data.frame, the original dataframe with the new column 'ID', 
+#'   that is the ID of the track. See details.
 #'
 #' @examples
 #' data(belcho)
@@ -40,28 +39,27 @@ resample <- function(
     high = 1.1
 ) {
   stopifnot(is(df[[ts_col]], "POSIXt"))
+
   # to Unix time
   ts <- df[[ts_col]]
   ts_unix <- as.numeric(ts)
+
   # frequencies to seconds
-  to_seconds <- switch(units,
-                       hours = 60 * 60,
-                       minuts = 60,
-                       seconds = 1)
+  to_seconds <- switch(
+    units,
+    hours = 60 * 60,
+    minutes = 60,
+    seconds = 1
+  )
   freq <- freq * to_seconds
   res <- .resample(ts_unix, freq, low, high)
 
-  ans <- df[res[["include"]], ]
-  ans[["ID"]] <- res[["ID"]][res[["include"]]]
-  ans[["dt"]] <- res[["interval"]][res[["include"]]] / to_seconds
+  out <- df[res[["include"]], ]
+  out[["ID"]] <- res[["ID"]][res[["include"]]]
 
-  tally <- table(ans[["ID"]])
-  if ( any(tally == 1) ) {
-    message("Some tracks have only one observation and will be removed.")
-    ids <- setdiff(ans[["ID"]], names(tally)[tally == 1])
-    ans <- ans[ans[["ID"]] %in% ids, ]
-  }
-
-  return (ans)
+  # add annotation columns
+  out <- annotate(out)
+  
+  return (out)
 
 }

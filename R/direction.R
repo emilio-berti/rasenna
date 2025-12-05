@@ -1,34 +1,7 @@
-#' @title Calculate direction
-#' @param x matrix of coordinates, one column for x and one for y.
-#' @param units either "rad" for radians of "deg" for degree.
-#' @return numeric, the direction angle, see details.
-#' @details Direction is calculated as the angle between two relocations.
-#' @examples
-#' x <- matrix(c(0, 0, 1, 1, 2, 3), byrow = TRUE, ncol = 2)
-#' direction(x, units = "deg")
-direction <- function(x, units = "rad") {
-  if (!is(x, "matrix")) {
-    x <- as.matrix(x)
-  }
-  stopifnot (ncol(x) == 2)
-  dx <- x[-1, ] - x[-nrow(x), ]
-  if (is(dx, "numeric")) dx <- matrix(dx, ncol = 2)
-  ans <- atan2(dx[, 2], dx[, 1])
-  if (any(rowSums(abs(dx)) == 0)) {
-    warning("no movement between some fixes")
-    empty <- which(rowSums(abs(dx)) == 0)
-    ans[empty] <- NA
-  }
-  if (units == "deg") ans <- ans * 180 / pi
-  ans <- c(NA, ans) #add first not-known direction
-  return (ans)
-}
-
 #' @title Calculate direction serial correlation
-#' @param x matrix of coordinates, one column for x and one for y.
-#' @param units either "rad" for radians of "deg" for degree.
+#' @param df data.frame of the track.
 #' @param method either "pearson" or "spearman".
-#' @param plot plot the directions.
+#' @param graph plot the directions.
 #' @return an object of class "htest", from cor.test().
 #' @details Only lag 1 correlation is tested.
 #' @examples
@@ -46,50 +19,33 @@ direction <- function(x, units = "rad") {
 #' }
 #' cor_test_direction(x, units = "deg")
 cor_test_direction <- function(
-    x,
+    df,
     method = "pearson",
-    units = "rad",
-    plot = TRUE
+    graph = TRUE
 ) {
-  if (!is(x, "matrix")) {
-    x <- as.matrix(x)
+  stopifnot("x" %in% colnames(df))
+  stopifnot("y" %in% colnames(df))
+  
+  if (!"bearing" %in% colnames(df)) {
+    b <- bearing(df)
+  } else {
+    b <- df[["bearing"]]
   }
-  stopifnot (ncol(x) == 2)
-  d <- direction(x)
-  d <- d[-1]
-  if (units == "deg") d <- d * 180 / pi
-  if (plot) {
+
+  if (graph) {
     plot(
-      d[-1], d[-length(d)],
+      b[-1], b[-length(b)],
       pch = 20, cex = .5, frame = FALSE,
       xlab = "Direction (t)",
-      ylab = "Direciton (t + 1)"
+      ylab = "Direciton (t + 1)",
+      axes = FALSE,
+      asp = 1
     )
-    abline(0, 1, lty = 2)
+    axis(1, seq(0, 2*pi, length.out = 4), c("E", "N", "W", "S"))
+    axis(2, seq(0, 2*pi, length.out = 4), c("E", "N", "W", "S"))
   }
-  ans <- cor.test(d[-1], d[-length(d)], method = method)
-  return (ans)
-}
 
-#' @title Estimate Relative Direction
-#' @param x matrix of coordinates, one column for x and one for y.
-#' @param xh matrix of coordinates of home range center.
-#' @param units either "rad" for radians of "deg" for degree.
-#' @details The relative direction is calculated as the angle between a
-#'  location and the center of the home range.
-#' @return vector of relative directions.
-relative_direction <- function(x, xh = NULL, units = "rad") {
-  if (!is(x, "matrix")) {
-    x <- as.matrix(x)
-  }
-  if (is.null(xh)) {
-    message("Home range center calculated as average coordinates")
-    xh <- matrix(colMeans(x), ncol = 2)
-  }
-  if (!is(xh, "matrix")) {
-    xh <- matrix(xh, ncol = 2)
-  }
-  ans <- atan2(xh[, 2] - x[, 2], xh[, 1] - x[, 1])
-  if (units == "deg") ans <- ans * 180 / pi
-  return (ans)
+  out <- cor.test(b[-1], b[-length(b)], method = method)
+
+  return (out)
 }

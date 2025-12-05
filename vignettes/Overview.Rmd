@@ -20,7 +20,41 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(rasenna)
-data(belcho)
+
+# example data, see ?capra for details
+data(capra)
+
+# column 'timestamp' as POSIXct
+capra[["timestamp"]] <- as.POSIXct(
+  strptime(
+    capra[["timestamp"]], 
+    format = "%Y-%m-%d %H:%M:%S", 
+    tz = "UTC"
+  )
+)
+```
+
+The functions `distance()`, `bearing()`, and `turning_angle()` wrap C++ functions 
+that calculate the Euclidean distance, bearing, and turning angles between relocations, respectively.
+The function `annotate()` wraps the three functions above.
+
+```{r annotate}
+capra <- annotate(capra)
+head(capra)
+```
+
+## Handling outliers
+
+```{r outliers}
+# speed in m/s, they are all reasonable: no outliers
+range(na.omit(capra)$speed, na.rm = TRUE)
+
+# plot to see if some high speeds and high turning angles
+with(
+  na.omit(capra),
+  plot(speed, turningAngle, xlab = "Speed (km/h)", ylab = expression(theta))
+)
+plot(capra$x / 1e3, capra$y / 1e3, xlab = "Easting (km)", ylab = "Northing (km)")
 ```
 
 ## Resample telemetry data
@@ -32,13 +66,28 @@ When a fix is removed, the time interval between fixes is re-calculated.
 Additionally, fixes that are apart more than a given time interval (see _high_ in `?resample()`) are kept, but they are assigned different _ID_s to indicate they belong to different tracks and should not be analyzed as part of the same consecutive trajectory.
 
 ```{r resample}
-belcho[["timestamp"]] <- strptime(
-  belcho[["timestamp"]], 
-  format = "%Y-%m-%d %H:%M:%S", 
-  tz = "UTC"
+summary(capra$lagHour)
+
+capra <- resample(
+  capra,
+  ts_col = "timestamp", # name of column with time and date
+  freq = 3,             # wanted frequency
+  units = "hours"       # units of the wanted frequency
 )
-res <- resample(belcho, ts_col = "timestamp", freq = 3, units = "hours")
-summary(res[["dt"]])
+capra <- capra[capra$ID %in% which(table(capra$ID) > 100), ]
+pal <- hcl.colors(length(unique(capra$ID)), "Dark 3", alpha = .5)
+plot(
+  capra$x, capra$y,
+  col = pal[match(capra$ID, cbind(unique(capra$ID), pal))],
+  pch = 3, cex = 1.5,
+
+)
+i <- 1
+for (id in unique(capra$ID)) {
+  track <- subset(capra, ID == id)
+  lines(track$x, track$y, col = pal[i], lwd = 1.5)
+  i <- i + 1
+}
 ```
 
 
@@ -48,72 +97,17 @@ Telemetry data that is at high temporal resolution may violate the assumption of
 This can be detected by assessing the correlation between contiguous fixes [@moorcroft2013mechanistic].
 
 ```{r direction}
-cor_test_direction(res[res[["ID"]] == 1, c("x", "y")], method = "pearson")
+cor_test_direction(capra[capra$ID == unique(capra$ID)[1], ])
+
+pvalue_autocor <- sapply(
+  unique(capra$ID), \(i) {
+    cor_test_direction(
+      capra[capra[["ID"]] == i, ], graph = FALSE
+    )$p.value
+  }
+)
+pvalue_autocor
+
+# retain only tracks without serial correlation
+capra <- capra[capra$ID %in% unique(capra$ID)[pvalue_autocor > 0.05], ]
 ```
-# Localizing tendency model
-
-The localizing tendency models assumes that direction angles are distributed following a Von Mises distribution:
-\[
-  \text{VM}(\phi, \hat\phi, \kappa)= \frac{exp(\kappa \cdot cos(\phi - \hat\phi))}{2 \pi I_0(\kappa)}
-\]
-and relocation steps follow a negative exponential distribution:
-\[
-  f_\tau(\rho, \lambda) = \lambda \cdot exp(-\lambda\cdot \rho)
-\]
-
-The parameters $\kappa$ and $\lambda = 1/\bar{\rho}$ can be estimated directly from the data [@moorcroft2013mechanistic, p. 143-144].
-
-```{r capra}
-data(capra)
-capra[["timestamp"]] <- strptime(
-  capra[["timestamp"]], 
-  format = "%Y-%m-%d %H:%M:%S", 
-  tz = "UTC"
-)
-res <- resample(capra, ts_col = "timestamp", freq = 6, units = "hours")
-res <- res[res$ID == 309, ] #keep only track 309
-xy <- res[, c("x", "y")]
-cor_test_direction(xy) #test serial correlation
-```
-
-```{r ltm_angle}
-k <- ltm_kappa(direction(xy), relative_direction(xy))
-hist(
-  direction(xy), 
-  probability = TRUE, 
-  breaks = 10, 
-  xlab = "direction (rad)",
-  main = ""
-)
-lines(
-  seq(-pi, pi, by = .01), 
-  von_mises(
-    seq(-pi, pi, by = .01),
-    mean(direction(xy), na.rm = TRUE),
-    kappa = k
-  ),
-  lw = 2, col = "darkred"
-)
-```
-
-```{r ltm_steps}
-rho <- ltm_rho(xy)
-d <- step_length(xy)
-hist(
-  d, 
-  probability = TRUE, 
-  breaks = 10,
-  xlab = "Step length (m)",
-  main = ""
-)
-lines(
-  seq(0, 1200, length.out = 5e2),
-  exponential(seq(0, 1200, length.out = 5e2), 1 / rho),
-  lw = 2, col = "darkred"
-)
-```
-
-Assumptions of modeling angles and step-length using the Von Mises and negative exponential distributions should always be checked.
-The data from _Capra ibex_ used above, for example, do not follow a Von Mises distribution and using the localizing tendency model is questionable.
-
-# References

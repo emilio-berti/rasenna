@@ -1,7 +1,7 @@
 Package: rasenna
 Type: Package
 Title: Suite of Tools for Movement Ecology
-Version: 0.1.0
+Version: 0.1.1
 Author: person("Emilio", "Berti", role = c("aut", "cre"), email = "emilio.berti@idiv.de")
 Maintainer: Emilio Berti <emilio.berti@idiv.de>
 Description: More about what it does (maybe more than one line)

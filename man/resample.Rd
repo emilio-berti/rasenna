@@ -23,9 +23,8 @@ resample(df, ts_col, freq, units, low = 0.9, high = 1.1)
 \item{high}{higher threshold to assign to a new track, in proportion.}
 }
 \value{
-data.frame, the original dataframe with two new columns:
-  1) ID, the ID of the track. See details.
-  2) dt, the time interval between fixes, with units specified with @param units.
+data.frame, the original dataframe with the new column 'ID', 
+  that is the ID of the track. See details.
 }
 \description{
 Resample GPS fixes
