@@ -7,18 +7,8 @@
 #' @details Only lag 1 correlation is tested.
 #' @examples
 #' set.seed(123)
-#' x <- matrix(rnorm(100), 50, 2)
-#' cor_test_direction(x, units = "deg")
-#' #' # give some correlation to direction
-#' for (i in seq_len(nrow(x))) {
-#'   if (i > 2) {
-#'     d <- direction(matrix(c(x[i - 2, ], x[i - 1, ]), byrow = TRUE, ncol = 2))
-#'     d <- rnorm(1, d[2], .5)
-#'     l <- sqrt ( sum((x[2, ] - x[1, ]) ^ 2) )
-#'     x[i, ] <- x[i - 1, ] + c(l * cos(d), l * sin(d))
-#'   }
-#' }
-#' cor_test_direction(x, units = "deg")
+#' data(capra)
+#' cor_test_direction(capra, graph = FALSE)
 cor_test_direction <- function(
     df,
     method = "pearson",
