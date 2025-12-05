@@ -9,6 +9,4 @@
 library(testthat)
 library(rasenna)
 
-data(belcho)
-
 test_check("rasenna")
