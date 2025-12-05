@@ -8,13 +8,13 @@ test_that("bearing and angle function", {
   alpha <- atan2(dy, dx)
   alpha <- ifelse(alpha < 0, alpha + 2*pi, alpha)
 
-  theta <- diff(b)
+  theta <- diff(alpha)
   theta <- (theta + pi) %% (2*pi) - pi
 
   # Cpp functions  
-  b <- bearing(belcho)[["bearing"]]
+  b <- bearing(belcho)
   b <- b[!is.na(b)]
-  t <- turning_angle(belcho)[["turningAngle"]]
+  t <- turning_angle(belcho)
   t <- t[!is.na(t)]
 
   # correct size
