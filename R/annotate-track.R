@@ -13,7 +13,7 @@
 annotate <- function(df) {
   stopifnot("x" %in% colnames(df))
   stopifnot("y" %in% colnames(df))
-  df[["distance"]] <- distance(df[1:3, ])
+  df[["distance"]] <- distance(df)
   df[["bearing"]] <- bearing(df)
   df[["turningAngle"]] <- turning_angle(df)
 

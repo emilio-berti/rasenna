@@ -16,7 +16,8 @@ distance <- function(df) {
   # if track ID present, remove values
   if ("ID" %in% colnames(df)) {
     gaps <- which(diff(df[["ID"]]) != 0)
-    out[gaps + 1] <- NA
+    gaps <- sapply(gaps, \(g) min(g + 1, length(out)))
+    out[gaps] <- NA
   }
 
   return(out)

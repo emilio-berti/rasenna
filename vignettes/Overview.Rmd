@@ -46,7 +46,7 @@ head(capra)
 ## Handling outliers
 
 ```{r outliers}
-# speed in m/s, they are all reasonable: no outliers
+# speed in m/s
 range(na.omit(capra)$speed, na.rm = TRUE)
 
 # plot to see if some high speeds and high turning angles
@@ -70,7 +70,6 @@ summary(capra$lagHour)
 
 capra <- resample(
   capra,
-  ts_col = "timestamp", # name of column with time and date
   freq = 3,             # wanted frequency
   units = "hours"       # units of the wanted frequency
 )

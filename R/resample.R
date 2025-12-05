@@ -32,7 +32,7 @@
 #' res <- resample(belcho, ts_col = "timestamp", freq = 3, units = "hours")
 resample <- function(
     df,
-    ts_col,
+    ts_col = "timestamp",
     freq,
     units,
     low = 0.9,

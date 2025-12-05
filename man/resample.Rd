@@ -4,7 +4,7 @@
 \alias{resample}
 \title{Resample GPS fixes}
 \usage{
-resample(df, ts_col, freq, units, low = 0.9, high = 1.1)
+resample(df, ts_col = "timestamp", freq, units, low = 0.9, high = 1.1)
 }
 \arguments{
 \item{df}{data.frame to resample.}
