@@ -1,6 +1,5 @@
 test_that("bearing and angle function", {
-  data(belcho)
-
+  
   # reference
   dx <- diff(belcho[["x"]])
   dy <- diff(belcho[["y"]])

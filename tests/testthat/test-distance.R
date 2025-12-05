@@ -1,5 +1,5 @@
 test_that("distance function", {
-  data(belcho)
+  
   dx <- belcho$x[-1] - belcho$x[-nrow(belcho)]
   dy <- belcho$y[-1] - belcho$y[-nrow(belcho)]
   d <- sqrt(dx ^ 2 + dy ^ 2)
