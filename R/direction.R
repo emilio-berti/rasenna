@@ -1,4 +1,5 @@
 #' @title Calculate direction serial correlation
+#' @importFrom graphics axis
 #' @param df data.frame of the track.
 #' @param method either "pearson" or "spearman".
 #' @param graph plot the directions.

@@ -3,5 +3,5 @@ importFrom(Rcpp, evalCpp)
 useDynLib(rasenna, .registration = TRUE)
 
 importFrom("stats", "cor.test")
-importFrom("graphics", "abline")
+importFrom("graphics", "abline", "axis")
 importFrom("methods", "is")
