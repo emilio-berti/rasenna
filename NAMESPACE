@@ -2,6 +2,6 @@ exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 useDynLib(rasenna, .registration = TRUE)
 
-importFrom("stats", "cor.test")
+importFrom("stats", "cor.test", "median", "kmeans")
 importFrom("graphics", "abline", "axis")
 importFrom("methods", "is")
