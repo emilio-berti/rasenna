@@ -23,3 +23,28 @@ net_squared_displ <- function(df) {
   return(d)
   
 }
+
+#' @title Straightness Index
+#' @description The straightness Index quantifies how straight is the 
+#'  movement of the animal.
+#' @details Straightness Index is calculated as the ratio of the squared root of
+#'  NSD and the path length (sum of relocation distance) of the track.
+#' @param df data.frame of the track.
+#' @return Numeric vector of straightness Index.
+#' @examples
+#' data(capra)
+#' capra$timestamp <- as.POSIXct(capra[["timestamp"]], format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+#' capra <- capra[-c(1, 2), ] # first two locations are likely release
+straightness <- function(df) {
+
+  stopifnot("x" %in% colnames(df))
+  stopifnot("y" %in% colnames(df))
+
+  d <- distance(df)[-1]
+  NSD <- net_squared_displ(df)[-1]
+
+  out <- sqrt(NSD) / cumsum(d)
+
+  return(out)
+  
+}

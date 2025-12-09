@@ -19,9 +19,9 @@ Cluster the location data into groups.
 Clustering is done using the K-mean algorithm from
  `stats::kmean()`. The optimal number of clusters is automatically
  calculated as the number of clusters that give an explained
- variance in the data \geq 0.80. Explained variance is the ratio
- of the between sum of squared divided by the total sum of 
- squares.
+ variance in the data greater or equal to 0.80. Explained variance
+ is the ratio of the between sum of squared divided by the total 
+ sum of squares.
 }
 \examples{
  data(capra)

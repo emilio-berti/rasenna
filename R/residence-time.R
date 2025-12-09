@@ -3,9 +3,9 @@
 #' @details Clustering is done using the K-mean algorithm from
 #'  `stats::kmean()`. The optimal number of clusters is automatically
 #'  calculated as the number of clusters that give an explained
-#'  variance in the data \geq 0.80. Explained variance is the ratio
-#'  of the between sum of squared divided by the total sum of 
-#'  squares.
+#'  variance in the data greater or equal to 0.80. Explained variance
+#'  is the ratio of the between sum of squared divided by the total 
+#'  sum of squares.
 #' @importFrom stats kmeans
 #' @param df data.frame of the track.
 #' @return The original data.frame with a new column 'cluster'.
@@ -43,8 +43,7 @@ clusterize <- function(df) {
 #' @details Residence time is calculated as the total time spent
 #'  consecutively within one defined area. If the track is divided
 #'  into clusters (see `clusterize()`), then residence time is 
-#'  calculated as the average residence time for each cluster 
-#'  separately.
+#'  calculated as the sum of the residence times for each cluster.
 #' @param df data.frame of the track.
 #' @param ts_col character name of the column with timestamp information.
 #' @param unit 'seconds', 'minutes', or 'hours'.
@@ -85,7 +84,7 @@ residence_time <- function(
         unit = "secs"
       )
     }
-    res_time <- tapply(res_time, INDEX = cl, FUN = mean)
+    res_time <- tapply(res_time, INDEX = cl, FUN = sum)
 
   } else {
     # only one cluster
@@ -95,6 +94,7 @@ residence_time <- function(
       df[[ts_col]][1],
       unit = "secs"
     )
+
   }
 
   # convert to the specified units

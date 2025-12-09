@@ -28,8 +28,7 @@ The residence time quantifies how much time is
 Residence time is calculated as the total time spent
  consecutively within one defined area. If the track is divided
  into clusters (see `clusterize()`), then residence time is 
- calculated as the average residence time for each cluster 
- separately.
+ calculated as the sum of the residence times for each cluster.
 }
 \examples{
  data(capra)
