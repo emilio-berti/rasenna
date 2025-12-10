@@ -46,7 +46,7 @@ flag_outliers <- function(df, quant = 0.999, ...) {
     if (any(g[1, c("x", "y")] != g[nrow(g), c("x", "y")])) {
       g[nrow(g), c("x", "y")] <- g[1, c("x", "y")]
     }
-    isopolys[[i]] <- vect(g, crs = crs(iso), type = "polygons")
+    isopolys[[i]] <- vect(g, crs = crs(v), type = "polygons")
   }
   isopolys <- vect(isopolys)
   isopolys <- aggregate(isopolys)
