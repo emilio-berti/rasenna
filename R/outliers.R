@@ -6,6 +6,8 @@
 #'  - Are outside the 'quant' isopleth of the home range calculated using 'UD' 
 #'    (see `homerange()` for details).
 #' @param df data.frame of the track.
+#' @param crs coordinate reference system of the track. This should be an
+#'  object that can be passed to `terra::crs()`.
 #' @param quant quantile for outlier detection. 
 #'  Must be a number between 0.05 and 1.00 at intervals of 0.05, 0.995, or 0.999.
 #'  Default = 0.999.
@@ -19,12 +21,13 @@
 #'       outlier.
 #' @examples
 #'  data(capra)
-#'  capra <- flag_outliers(capra)
-flag_outliers <- function(df, quant = 0.999, ...) {
+#'  capra <- flag_outliers(capra, crs = "EPSG:7791")
+flag_outliers <- function(df, crs, quant = 0.999, ...) {
 
   if (!"speed" %in% colnames(df)) {
     df <- annotate(df)
   }
+  v <- vect(df, geom = c("x", "y"), crs = crs)
 
   # speed/angle outliers -----------------------------------
   q_speed <- quantile(df$speed, quant, na.rm = TRUE)
@@ -34,8 +37,7 @@ flag_outliers <- function(df, quant = 0.999, ...) {
 
   # home range outliers -----------------------------------
   # isopleth lines
-  v <- vect(df, geom = c("x", "y"), crs = "EPSG:7791")
-  isolines <- homerange(v, method = "UD", ...)$isopleth
+  isolines <- homerange(df, crs = crs(v), method = "UD", ...)$isopleth
   isolines <- isolines[isolines$level == quant]
   isolines <- disagg(isolines)
 

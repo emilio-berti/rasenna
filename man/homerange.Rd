@@ -4,10 +4,13 @@
 \alias{homerange}
 \title{Home Range}
 \usage{
-homerange(x, method = c("MCP", "UD"), show_map = FALSE, ...)
+homerange(df, crs, method = c("MCP", "UD"), show_map = FALSE, ...)
 }
 \arguments{
-\item{x}{spatVector object of the track.}
+\item{df}{data.frame of the track.}
+
+\item{crs}{coordinate reference system of the track. This should be an
+object that can be passed to `terra::crs()`.}
 
 \item{method}{either "MCP" or "UD".}
 
@@ -33,6 +36,5 @@ Home range is calculated using different approaches, specified by the
 \examples{
 library(terra)
 data(capra)
-capra <- vect(capra, geom = c("x", "y"), crs = "EPSG:7791")
-homerange(capra, method = "UD")
+homerange(capra, crs = "EPSG:7791", method = "UD")
 }

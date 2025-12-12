@@ -4,10 +4,13 @@
 \alias{flag_outliers}
 \title{Relocation Outliers}
 \usage{
-flag_outliers(df, quant = 0.999, ...)
+flag_outliers(df, crs, quant = 0.999, ...)
 }
 \arguments{
 \item{df}{data.frame of the track.}
+
+\item{crs}{coordinate reference system of the track. This should be an
+object that can be passed to `terra::crs()`.}
 
 \item{quant}{quantile for outlier detection. 
 Must be a number between 0.05 and 1.00 at intervals of 0.05, 0.995, or 0.999.
@@ -36,5 +39,5 @@ Relocation points are flagged as outliers if:
 }
 \examples{
  data(capra)
- capra <- flag_outliers(capra)
+ capra <- flag_outliers(capra, crs = "EPSG:7791")
 }

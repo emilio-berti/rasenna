@@ -19,7 +19,7 @@
 #' library(terra)
 #' data(capra)
 #' homerange(capra, crs = "EPSG:7791", method = "UD")
-homerange <- function(df, method = c("MCP", "UD"), show_map = FALSE, ...) {
+homerange <- function(df, crs, method = c("MCP", "UD"), show_map = FALSE, ...) {
 
   method <- match.arg(method)
   dots <- list(...)
