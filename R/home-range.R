@@ -5,7 +5,9 @@
 #'  'method' argument. 'MCP' uses the minimum convex polygon approach.
 #'  If using 'UD', a KDE is calculated. The KDE can be adjusted with the 
 #'  optional dots arguments.
-#' @param x spatVector object of the track.
+#' @param df data.frame of the track.
+#' @param crs coordinate reference system of the track. This should be an
+#'  object that can be passed to `terra::crs()`.
 #' @param method either "MCP" or "UD".
 #' @param show_map TRUE/FALSE.
 #' @param ... additional arguments for kernel density estimation, including
@@ -16,13 +18,16 @@
 #' @examples
 #' library(terra)
 #' data(capra)
-#' capra <- vect(capra, geom = c("x", "y"), crs = "EPSG:7791")
-#' homerange(capra, method = "UD")
-homerange <- function(x, method = c("MCP", "UD"), show_map = FALSE, ...) {
+#' homerange(capra, crs = "EPSG:7791", method = "UD")
+homerange <- function(df, method = c("MCP", "UD"), show_map = FALSE, ...) {
 
-  stopifnot(is(x, "SpatVector"))
   method <- match.arg(method)
   dots <- list(...)
+
+  if (!"distance" %in% colnames(df)) {
+    df <- annotate(df)
+  }
+  x <- vect(df, geom = c("x", "y"), crs = crs)
 
   if (method == "MCP") {
 
@@ -39,14 +44,30 @@ homerange <- function(x, method = c("MCP", "UD"), show_map = FALSE, ...) {
     # utilization distribution
 
     # rasterize 'x'
-    res <- ifelse(is.null(dots$resolution), 100, dots$resolution)
-    r <- rast(ext(x), resolution = res, crs = crs(x))
+    res <- ifelse(
+      is.null(dots$resolution),
+      50,
+      dots$resolution
+    )
+    r <- rast(
+      ext(buffer(x, res * 10)), # add 10 cells per side
+      resolution = res,
+      crs = crs(x)
+    )
     kde <- rasterize(x, r, fun = "count", background = 0)
     
     # Gaussian weight matrix
-    sigma <- ifelse(is.null(dots$sigma), res * 2, dots$sigma) # smoothing parameter in raw units 
+    sigma <- ifelse(  # smoothing parameter in raw units 
+      is.null(dots$sigma),
+      res * 2,
+      dots$sigma
+    )
     sigma_cells <- sigma / res(r)[1]  # convert to raster cells
-    size <- ifelse(is.null(dots$size), 1 + 2 * ceiling(3 * sigma_cells), dots$size)
+    size <- ifelse(
+      is.null(dots$size),
+      1 + 2 * ceiling(3 * sigma_cells),
+      dots$size
+    )
     win <- seq(-floor(size / 2), floor(size / 2), 1)
     gauss <- exp(-(win ^ 2)/(2 * sigma_cells ^ 2))
     kernel <- gauss %*% t(gauss)  # 2D Gaussian
@@ -81,7 +102,7 @@ homerange <- function(x, method = c("MCP", "UD"), show_map = FALSE, ...) {
     thresholds <- sapply(p_levels, function(p) {
       vals_sorted[which(cum_prob >= p)[1]]
     })
-    thresholds[length(thresholds)] <- max(vals)
+    thresholds[length(thresholds)] <- vals_sorted[2]
     isopleth <- lapply(thresholds, \(th) as.contour(kde_smooth, levels = th))
     isopleth <- vect(isopleth)
     isopleth$level <- p_levels
